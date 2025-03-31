@@ -17,9 +17,9 @@ export default function OrbitGallery() {
       }}
       camera={{ position: [0, 0, 10], fov: 50 }}
     >
-      <color attach="background" args={["#000000"]} />
+      <color attach="background" args={["#ffffff"]} />
       <ambientLight intensity={1} />
-      <ScrollControls pages={2} damping={0.3} horizontal>
+      <ScrollControls pages={6} damping={0.3} distance={1}>
         <ImageGallery />
       </ScrollControls>
     </Canvas>
@@ -31,22 +31,25 @@ function ImageGallery() {
   const [hovered, setHovered] = useState<number | null>(null);
 
   const totalImages = 12;
-  const radius = 5; // Radius of the circle
-  const arcLength = Math.PI * 2; // Full circle
+  const radius = 12;
+  const arcLength = Math.PI * 2;
   const spacing = arcLength / totalImages;
+
+  // Define verticalShift here to pass down or use in lookAt target
+  const verticalShift = -10; // Adjusted shift, depends on desired look
 
   // Use scroll offset to determine starting angle
   const scrollRotation = useRef(0);
 
   useFrame(() => {
-    // Update rotation based on scroll
-    scrollRotation.current = scroll.offset * Math.PI * 2;
+    // Update rotation based on scroll - endless scrolling
+    // Multiply by total angle covered over scroll distance (e.g., 2 full circles over 6 pages)
+    scrollRotation.current = scroll.offset * (Math.PI * 2 * 2);
   });
 
   return (
     <>
       {Array.from({ length: totalImages }, (_, i) => {
-        // Calculate position on a circle - evenly spaced
         const angle = i * spacing;
 
         return (
@@ -55,10 +58,11 @@ function ImageGallery() {
             radius={radius}
             baseAngle={angle}
             scrollRotation={scrollRotation}
-            url={`/img${Math.floor(i % 10) + 1}.jpg`}
+            url={`/img${Math.floor(i % 10) + 1}.jpg`} // Assuming 10 images named img1.jpg to img10.jpg in public/
             isHovered={hovered === i}
             onHover={() => setHovered(i)}
             onLeave={() => setHovered(null)}
+            verticalShift={verticalShift} // Pass down shift
           />
         );
       })}
@@ -74,47 +78,60 @@ type RotatingImageProps = {
   isHovered: boolean;
   onHover: () => void;
   onLeave: () => void;
+  verticalShift: number;
 };
 
-function RotatingImage({ radius, baseAngle, scrollRotation, url, isHovered, onHover, onLeave }: RotatingImageProps) {
-  const imageRef = useRef<THREE.Group>(null);
+function RotatingImage({
+  radius,
+  baseAngle,
+  scrollRotation,
+  url,
+  isHovered,
+  onHover,
+  onLeave,
+  verticalShift,
+}: RotatingImageProps) {
+  const groupRef = useRef<THREE.Group>(null);
 
-  useFrame(() => {
-    if (imageRef.current) {
+  useFrame((state, delta) => {
+    if (groupRef.current) {
       // Calculate current angle based on base angle and scroll rotation
       const currentAngle = baseAngle + scrollRotation.current;
 
-      // Position on a flat 2D circle in the XY plane (all images have z=0)
+      // Calculate x and y on the circle, applying vertical shift to y
       const x = Math.sin(currentAngle) * radius;
-      const y = Math.cos(currentAngle) * radius;
+      const y = Math.cos(currentAngle) * radius + verticalShift;
 
-      // Update position - keeping z constant at 0 (flat plane)
-      imageRef.current.position.x = x;
-      imageRef.current.position.y = y;
+      // Update position - keeping z constant at 0 (flat plane relative to world Z=0)
+      groupRef.current.position.set(x, y, 0);
 
-      // Rotate to face forward (no need to face center in 2D circle)
-      // Just add slight rotation for aesthetic angle
-      const rotationAngle = currentAngle - Math.PI / 2;
-      imageRef.current.rotation.z = rotationAngle;
+      // Make images face the camera instead of the center point
+      groupRef.current.quaternion.copy(state.camera.quaternion);
 
-      // Apply hover effect
-      const scale = isHovered ? 1.1 : 1;
-      imageRef.current.scale.setScalar(scale);
+      // Apply hover effect (smoothly)
+      const targetScale = isHovered ? 1.2 : 1;
+      groupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 10);
     }
   });
 
   return (
-    <group ref={imageRef} position={[0, 0, 0]}>
+    <group ref={groupRef}>
       <Image
         url={url}
         transparent
-        // @ts-expect-error - The Image component from drei accepts this scale format
-        scale={[2.5, 3.2, 1]}
+        // @ts-expect-error - Drei's Image scale prop can accept array
+        scale={[4.0, 4.0, 1]}
+        rotation={[0, 0, 0]}
         position={[0, 0, 0]}
-        onPointerOver={onHover}
-        onPointerOut={onLeave}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          onHover();
+        }}
+        onPointerOut={(e) => {
+          e.stopPropagation();
+          onLeave();
+        }}
         side={THREE.DoubleSide}
-        radius={0.05}
       />
     </group>
   );

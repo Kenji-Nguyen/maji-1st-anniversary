@@ -1,19 +1,176 @@
-@import url("https://rsms.me/inter/inter.css");
 @import "tailwindcss";
+
+/* GT Flexa Font Declarations */
+@font-face {
+  font-family: "GT Flexa";
+  src: url("./assets/fonts/GT-Flexa-Standard-Thin.woff2") format("woff2"),
+    url("./assets/fonts/GT-Flexa-Standard-Thin.woff") format("woff"),
+    url("./assets/fonts/GT-Flexa-Standard-Thin.ttf") format("truetype");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "GT Flexa";
+  src: url("./assets/fonts/GT-Flexa-Standard-Thin-Italic.woff2") format("woff2"),
+    url("./assets/fonts/GT-Flexa-Standard-Thin-Italic.woff") format("woff"),
+    url("./assets/fonts/GT-Flexa-Standard-Thin-Italic.ttf") format("truetype");
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "GT Flexa";
+  src: url("./assets/fonts/GT-Flexa-Standard-Light.woff2") format("woff2"),
+    url("./assets/fonts/GT-Flexa-Standard-Light.woff") format("woff"),
+    url("./assets/fonts/GT-Flexa-Standard-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "GT Flexa";
+  src: url("./assets/fonts/GT-Flexa-Standard-Bold.woff2") format("woff2"),
+    url("./assets/fonts/GT-Flexa-Standard-Bold.woff") format("woff"),
+    url("./assets/fonts/GT-Flexa-Standard-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "GT Flexa Mono";
+  src: url("./assets/fonts/GT-Flexa-Mono-Medium.woff2") format("woff2"),
+    url("./assets/fonts/GT-Flexa-Mono-Medium.woff") format("woff"),
+    url("./assets/fonts/GT-Flexa-Mono-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-standard: "GT Flexa", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  --font-mono: "GT Flexa Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+    monospace;
+  --spacing-2xs: 0.25rem;
+  --spacing-xs: 0.5rem;
+  --spacing-m: 1rem;
+  --spacing-l: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 2.5rem;
+  --spacing-3xl: 3rem;
+  --spacing-4xl: 4rem;
+  --spacing-5xl: 5rem;
+  --spacing-6xl: 6rem;
+  --spacing-7xl: 8rem;
+  --spacing-8xl: 10rem;
+  --spacing-9xl: 12rem;
+  --spacing-10xl: 16rem;
+  --spacing-11xl: 20rem;
+}
 
 * {
   box-sizing: border-box;
 }
 
 :root {
-  font-family: "Inter", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* Define font variables */
+  --font-standard: "GT Flexa", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  --font-mono: "GT Flexa Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+    monospace;
+
+  /* Use the sans-serif font by default */
+  font-family: var(--font-standard);
   line-height: 1.5;
-  font-weight: 400;
-  color-scheme: dark;
+  font-weight: 400; /* Default weight, you can adjust this */
+  color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Color variables */
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+
+  /* Base color tokens */
+  --clr-dark-purple: rgba(15, 2, 26, 1);
+  --clr-dark-purple-100: rgba(15, 2, 26, 1);
+  --clr-dark-purple-80: rgba(15, 2, 26, 0.8);
+  --clr-dark-purple-60: rgba(15, 2, 26, 0.6);
+  --clr-dark-purple-40: rgba(15, 2, 26, 0.4);
+  --clr-dark-purple-30: rgba(15, 2, 26, 0.3);
+  --clr-dark-purple-20: rgba(15, 2, 26, 0.2);
+  --clr-dark-purple-10: rgba(15, 2, 26, 0.1);
+  --clr-dark-purple-1: rgba(15, 2, 26, 0.01);
+
+  --clr-white: rgba(255, 255, 255, 1);
+  --clr-white-100: rgba(255, 255, 255, 1);
+  --clr-white-80: rgba(255, 255, 255, 0.8);
+  --clr-white-60: rgba(255, 255, 255, 0.6);
+  --clr-white-40: rgba(255, 255, 255, 0.4);
+  --clr-white-30: rgba(255, 255, 255, 0.3);
+  --clr-white-20: rgba(255, 255, 255, 0.2);
+  --clr-white-10: rgba(255, 255, 255, 0.1);
+  --clr-white-1: rgba(255, 255, 255, 0.01);
+
+  --clr-rose: rgba(255, 178, 210, 1);
+  --clr-orange: rgba(255, 131, 89, 1);
+  --clr-red: rgba(229, 69, 82, 1);
+  --clr-pink: rgba(166, 33, 110, 1);
+  --clr-purple: rgba(72, 11, 115, 1);
+
+  /* Design System */
+  --border-primary: var(--clr-dark-purple-100);
+  --border-secondary: var(--clr-dark-purple-40);
+  --border-tertiary: var(--clr-dark-purple-20);
+
+  --icon-primary: var(--clr-dark-purple-100);
+  --icon-secondary: var(--clr-dark-purple-80);
+
+  --text-primary: var(--clr-dark-purple-100);
+  --text-secondary: var(--clr-dark-purple-80);
+
+  --surface-strong: var(--clr-dark-purple-10);
+  --surface-weak: var(--clr-dark-purple-1);
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+
+  --border-primary: var(--clr-white-80);
+  --border-secondary: var(--clr-white-30);
+  --border-tertiary: var(--clr-white-10);
+
+  --icon-primary: var(--clr-white-80);
+  --icon-secondary: var(--clr-white-60);
+
+  --text-primary: var(--clr-white-80);
+  --text-secondary: var(--clr-white-60);
+
+  --surface-strong: var(--clr-white-10);
+  --surface-weak: var(--clr-white-1);
+}
+
+.high-contrast {
+  --border-primary: var(--clr-white-100);
+  --border-secondary: var(--clr-dark-purple-40);
+  --border-tertiary: var(--clr-dark-purple-20);
+
+  --icon-primary: var(--clr-dark-purple-100);
+  --icon-secondary: var(--clr-dark-purple-80);
+
+  --text-primary: var(--clr-dark-purple-100);
+  --text-secondary: var(--clr-dark-purple-80);
+
+  --surface-strong: var(--clr-white-10);
+  --surface-weak: var(--clr-white-1);
 }
 
 html,
@@ -27,110 +184,104 @@ body,
 }
 
 body {
-  font-family: "Inter";
-  min-width: 320px;
-  min-height: 100vh;
-  background-color: #000;
-  color: white;
+  font-family: var(--font-standard);
+  background: linear-gradient(180deg, #e6eaf5 0%, #f6f6f6 80%);
+  color: var(--color-text);
   display: block;
   cursor: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxMCIgZmlsbD0iI0U4QjA1OSIvPjwvc3ZnPg=="),
     auto;
 }
 
-a {
-  pointer-events: all;
-  color: white;
-  text-decoration: none;
-}
-
-a:hover {
-  color: #747bff;
-}
-
-svg {
-  fill: white;
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
+@layer base {
+  body,
+  p {
+    @apply font-standard font-light text-base md:text-base lg:text-lg 2xl:text-lg leading-[150%] tracking-[0%];
   }
-  to {
-    opacity: 1;
+
+  h1,
+  .title-heading-1 {
+    @apply font-standard font-bold text-6xl md:text-4xl lg:text-5xl 2xl:text-6xl leading-[120%] tracking-[0%];
+  }
+
+  .title-heading-1-thin {
+    @apply font-standard font-thin text-4xl md:text-4xl lg:text-5xl 2xl:text-6xl leading-[120%] tracking-[0%];
+  }
+
+  h2,
+  .title-heading-2 {
+    @apply font-standard font-bold text-2xl md:text-2xl lg:text-4xl 2xl:text-5xl leading-[120%] tracking-[0%];
+  }
+
+  .title-heading-2-thin {
+    @apply font-standard font-thin text-2xl md:text-2xl lg:text-4xl 2xl:text-5xl leading-[120%] tracking-[0%];
+  }
+
+  h3,
+  .title-heading-3 {
+    @apply font-standard font-bold text-xl md:text-xl lg:text-2xl 2xl:text-4xl leading-[120%] tracking-[0%];
+  }
+
+  .title-heading-3-thin {
+    @apply font-standard font-thin text-xl md:text-xl lg:text-2xl 2xl:text-4xl leading-[120%] tracking-[0%];
+  }
+
+  .title-chapter-title {
+    @apply font-mono font-medium text-xs md:text-xs lg:text-sm 2xl:text-sm leading-[120%] tracking-[0.125%] uppercase;
+  }
+
+  .body-lead {
+    @apply font-standard font-thin text-xl md:text-xl lg:text-3xl 2xl:text-3xl leading-[150%] tracking-[0%];
+  }
+
+  .body-lead-bold {
+    @apply font-standard font-bold text-xl md:text-xl lg:text-3xl 2xl:text-3xl leading-[150%] tracking-[0%];
+  }
+
+  .body-large {
+    @apply font-standard font-light text-lg md:text-lg lg:text-xl 2xl:text-2xl leading-[150%] tracking-[0%];
+  }
+
+  .body-large-bold {
+    @apply font-standard font-bold text-lg md:text-lg lg:text-xl 2xl:text-2xl leading-[150%] tracking-[0%];
+  }
+
+  .body-bold {
+    @apply font-standard font-bold text-base md:text-base lg:text-lg 2xl:text-lg leading-[150%] tracking-[0%];
+  }
+
+  .body-small {
+    @apply font-standard font-light text-xs md:text-xs lg:text-sm 2xl:text-sm leading-[150%] tracking-[0%];
+  }
+
+  .body-small-bold {
+    @apply font-standard font-bold text-xs md:text-xs lg:text-sm 2xl:text-sm leading-[150%] tracking-[0%];
+  }
+
+  blockquote,
+  .body-quote {
+    @apply font-standard font-thin text-xl md:text-xl lg:text-2xl 2xl:text-3xl leading-[150%] tracking-[0%] italic;
+  }
+
+  a,
+  .label-button {
+    @apply font-mono font-medium text-xs md:text-xs lg:text-sm 2xl:text-sm leading-[100%] tracking-[0.125%] uppercase;
+  }
+
+  .label-input {
+    @apply font-standard font-light text-base md:text-base lg:text-lg 2xl:text-lg leading-[140%] tracking-[0%];
   }
 }
 
-/* Fix for Three.js canvas to take up full viewport */
-#root > div {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-  background-color: #000;
+.font-italic {
+  font-style: italic;
 }
 
-canvas {
-  width: 100% !important;
-  height: 100% !important;
-  touch-action: none;
-  animation: fade-in 0.5s ease 0.2s forwards;
+html {
+  scroll-behavior: smooth;
 }
 
-.orbit-canvas {
-  opacity: 1 !important;
-}
-
-/* 3D Transforms */
-.perspective {
-  perspective: 1000px;
-}
-
-.transform-gpu {
-  transform: translate3d(0, 0, 0);
-}
-
-.transform-style-3d {
-  transform-style: preserve-3d;
-}
-
-/* Custom Anniversary colors */
-.from-gold-400 {
-  --tw-gradient-from: #f6d365;
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(246, 211, 101, 0));
-}
-
-.to-gold-600 {
-  --tw-gradient-to: #fda085;
-}
-
-h1 {
-  font-size: 2em;
-  line-height: 1.1;
-  color: white;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-header {
-  background-color: rgba(0, 0, 0, 0.4) !important;
-  backdrop-filter: blur(4px);
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-
-button:hover {
-  border-color: #646cff;
-}
-
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+@media screen and (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
