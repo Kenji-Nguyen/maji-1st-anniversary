@@ -1,138 +1,42 @@
 import * as THREE from "three";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useEffect } from "react";
 import { MeshLineGeometry, MeshLineMaterial } from "meshline";
-import { extend, Canvas, useFrame } from "@react-three/fiber";
-import { EffectComposer, N8AO } from "@react-three/postprocessing";
+import { extend, Canvas, useFrame, useThree } from "@react-three/fiber";
+import { EffectComposer, DepthOfField, ToneMapping } from "@react-three/postprocessing";
 import { easing } from "maath";
 import { useControls } from "leva";
-import { Environment, useGLTF } from "@react-three/drei";
-import { BallCollider, Physics, RigidBody, CylinderCollider } from "@react-three/rapier";
 
 extend({ MeshLineGeometry, MeshLineMaterial });
 
-// Balloon materials and setup
-THREE.ColorManagement.legacyMode = false;
-const baubleMaterial = new THREE.MeshLambertMaterial({ color: "#c0a0a0", emissive: "red" });
-const capMaterial = new THREE.MeshStandardMaterial({
-  metalness: 0.75,
-  roughness: 0.15,
-  color: "#8a492f",
-  emissive: "#600000",
-  envMapIntensity: 20,
-});
-const sphereGeometry = new THREE.SphereGeometry(1, 28, 28);
-const baubles = [...Array(50)].map(() => ({ scale: [0.75, 0.75, 1, 1, 1.25][Math.floor(Math.random() * 5)] }));
-
 export default function App() {
-  const { dash, count, radius, showBalloons } = useControls({
-    dash: { value: 0.9, min: 0, max: 0.99, step: 0.01 },
-    count: { value: 50, min: 0, max: 200, step: 1 },
-    radius: { value: 50, min: 1, max: 100, step: 1 },
-    showBalloons: { value: true },
-  });
+  // const { dash, count, radius } = useControls({
+  //   dash: { value: 0.9, min: 0, max: 0.99, step: 0.01 },
+  //   count: { value: 50, min: 0, max: 200, step: 1 },
+  //   radius: { value: 50, min: 1, max: 100, step: 1 },
+  // });
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full canvas-container">
       <Canvas
         shadows
+        flat
         gl={{ alpha: true, stencil: false, depth: false, antialias: false }}
-        camera={{ position: [0, 0, 20], fov: 32.5, near: 1, far: 100 }}
+        camera={{ position: [0, 0, 80], fov: 32.5, near: 1, far: 200 }}
         onCreated={(state) => (state.gl.toneMappingExposure = 1.5)}
       >
-        <ambientLight intensity={1} />
-        <spotLight
-          position={[20, 20, 25]}
-          penumbra={1}
-          angle={0.2}
-          color="white"
-          castShadow
-          shadow-mapSize={[512, 512]}
-        />
-        <directionalLight position={[0, 5, -4]} intensity={4} />
-        <directionalLight position={[0, -15, -0]} intensity={4} color="red" />
+        {/* <color attach="background" args={['#101020']} /> */}
         <Lines
-          dash={dash}
-          count={count}
-          radius={radius}
+          dash={0.97}
+          count={60}
+          radius={50}
           colors={[[10, 0.5, 2], [1, 2, 10], "#8416D9", "#EF0044", "#EF6000", "#FFA302"]}
         />
-
-        {showBalloons && (
-          <Physics gravity={[0, 0, 0]}>
-            <Pointer />
-            {baubles.map((props, i) => (
-              <Bauble key={i} {...props} />
-            ))}
-          </Physics>
-        )}
-
         <Rig />
-        <Environment files="/adamsbridge.hdr" />
-        <EffectComposer disableNormalPass>
-          <N8AO color="red" aoRadius={2} intensity={1.15} />
-        </EffectComposer>
       </Canvas>
     </div>
   );
 }
 
-function Bauble({ vec = new THREE.Vector3(), scale, r = THREE.MathUtils.randFloatSpread }) {
-  const { nodes } = useGLTF("/cap.glb");
-  const api = useRef();
-  useFrame((state, delta) => {
-    delta = Math.min(0.1, delta);
-    api.current.applyImpulse(
-      vec
-        .copy(api.current.translation())
-        .normalize()
-        .multiply({ x: -50 * delta * scale, y: -150 * delta * scale, z: -50 * delta * scale })
-    );
-  });
-
-  return (
-    <RigidBody
-      linearDamping={0.75}
-      angularDamping={0.15}
-      friction={0.2}
-      position={[r(20), r(20) - 25, r(20) - 10]}
-      ref={api}
-      colliders={false}
-      dispose={null}
-    >
-      <BallCollider args={[scale]} />
-      <CylinderCollider
-        rotation={[Math.PI / 2, 0, 0]}
-        position={[0, 0, 1.2 * scale]}
-        args={[0.15 * scale, 0.275 * scale]}
-      />
-      <mesh castShadow receiveShadow scale={scale} geometry={sphereGeometry} material={baubleMaterial} />
-      <mesh
-        castShadow
-        scale={2.5 * scale}
-        position={[0, 0, -1.8 * scale]}
-        geometry={nodes.Mesh_1.geometry}
-        material={capMaterial}
-      />
-    </RigidBody>
-  );
-}
-
-function Pointer({ vec = new THREE.Vector3() }) {
-  const ref = useRef(null);
-
-  useFrame(({ mouse, viewport }) => {
-    if (!ref.current) return;
-
-    vec.lerp({ x: (mouse.x * viewport.width) / 2, y: (mouse.y * viewport.height) / 2, z: 0 }, 0.2);
-    ref.current.setNextKinematicTranslation(vec);
-  });
-
-  return (
-    <RigidBody position={[100, 100, 100]} type="kinematicPosition" colliders={false} ref={ref}>
-      <BallCollider args={[2]} />
-    </RigidBody>
-  );
-}
 function Lines({ dash, count, colors, radius = 50, rand = THREE.MathUtils.randFloatSpread }) {
   const lines = useMemo(() => {
     return Array.from({ length: count }, () => {
@@ -176,14 +80,33 @@ function Fatline({ curve, width, color, speed, dash }) {
   );
 }
 
-function Rig({ radius = 20 }) {
+function Rig({ radius = 50 }) {
+  const { camera } = useThree();
+  const initialPos = useRef([0, 0, 500]);
+  const targetPos = useRef([0, 0, 0]);
+  const targetRotation = useRef(new THREE.Quaternion());
+
+  useEffect(() => {
+    camera.position.set(...initialPos.current);
+  }, [camera]);
+
   useFrame((state, dt) => {
-    easing.damp3(
-      state.camera.position,
-      [Math.sin(state.pointer.x) * radius, Math.atan(state.pointer.y) * radius, Math.cos(state.pointer.x) * radius],
-      0.25,
-      dt
-    );
-    state.camera.lookAt(0, 0, 0);
+    const targetX = Math.sin(state.pointer.x) * radius;
+    const targetY = Math.atan(state.pointer.y) * radius;
+    const targetZ = Math.cos(state.pointer.x) * radius;
+
+    targetPos.current = [targetX, targetY, 80 + targetZ / 2];
+
+    easing.damp3(camera.position, targetPos.current, 2.0, dt);
+
+    const lookAtPoint = new THREE.Vector3(state.pointer.x * 10, state.pointer.y * 10, 0);
+
+    const lookAtMatrix = new THREE.Matrix4();
+    lookAtMatrix.lookAt(camera.position, lookAtPoint, camera.up);
+    targetRotation.current.setFromRotationMatrix(lookAtMatrix);
+
+    easing.dampQ(camera.quaternion, targetRotation.current, 0.4, dt);
   });
+
+  return null;
 }
