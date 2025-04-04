@@ -2,6 +2,34 @@ import { useState, useEffect } from "react";
 
 export default function ConfettiOverlay() {
   const [confettiParticles, setConfettiParticles] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if device is mobile
+  useEffect(() => {
+    function checkIfMobile() {
+      const mobileBreakpoint = 768;
+      setIsMobile(window.innerWidth < mobileBreakpoint);
+    }
+
+    // Check initially
+    checkIfMobile();
+
+    // Add resize listener
+    window.addEventListener("resize", checkIfMobile);
+
+    // Update cursor visibility for mobile
+    if (isMobile) {
+      document.documentElement.style.cursor = "auto";
+    } else {
+      document.documentElement.style.cursor = "none";
+    }
+
+    return () => {
+      window.removeEventListener("resize", checkIfMobile);
+      // Reset cursor on unmount
+      document.documentElement.style.cursor = "auto";
+    };
+  }, [isMobile]);
 
   // Handle click to create confetti
   function handleConfettiClick(e) {
@@ -11,8 +39,11 @@ export default function ConfettiOverlay() {
     const emojis = ["🎉", "🎊", "✨", "🎈", "🥳", "🍰", "🎂"];
     const newParticles = [];
 
-    // Create 20 particles per click
-    for (let i = 0; i < 20; i++) {
+    // Create fewer particles on mobile
+    const particleCount = isMobile ? 8 : 20;
+
+    // Create particles per click
+    for (let i = 0; i < particleCount; i++) {
       newParticles.push({
         id: `${Date.now()}-${i}`,
         x: e.clientX,
