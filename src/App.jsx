@@ -16,7 +16,7 @@ export default function App() {
   // });
 
   return (
-    <div className="relative w-full h-full canvas-container">
+    <div className="relative w-full h-full canvas-container opacity-50">
       <Canvas
         shadows
         flat
@@ -25,12 +25,7 @@ export default function App() {
         onCreated={(state) => (state.gl.toneMappingExposure = 1.5)}
       >
         {/* <color attach="background" args={['#101020']} /> */}
-        <Lines
-          dash={0.97}
-          count={60}
-          radius={50}
-          colors={[[10, 0.5, 2], [1, 2, 10], "#8416D9", "#EF0044", "#EF6000", "#FFA302"]}
-        />
+        <Lines dash={0.96} count={60} radius={50} colors={["#8416D9", "#EF0044", "#EF6000", "#FFA302"]} />
         <Rig />
       </Canvas>
     </div>
@@ -97,7 +92,7 @@ function Rig({ radius = 50 }) {
 
     targetPos.current = [targetX, targetY, 80 + targetZ / 2];
 
-    easing.damp3(camera.position, targetPos.current, 2.0, dt);
+    easing.damp3(camera.position, targetPos.current, 0.4, dt);
 
     const lookAtPoint = new THREE.Vector3(state.pointer.x * 10, state.pointer.y * 10, 0);
 

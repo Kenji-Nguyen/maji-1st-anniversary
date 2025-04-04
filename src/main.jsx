@@ -2,46 +2,87 @@ import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 import App from "./App.jsx";
+import ConfettiOverlay from "./ConfettiOverlay.jsx";
+
+function CustomCursor() {
+  useEffect(() => {
+    const cursor = document.createElement("div");
+    cursor.classList.add("custom-cursor");
+
+    // Add text element for "click"
+    const cursorText = document.createElement("span");
+    cursorText.classList.add("custom-cursor-text");
+    cursorText.textContent = "click";
+    cursor.appendChild(cursorText);
+
+    document.body.appendChild(cursor);
+
+    let isMoving = false;
+    let lastX = 0;
+    let lastY = 0;
+    let movementTimeout;
+
+    function updateCursorPosition(e) {
+      // Update cursor position
+      cursor.style.left = `${e.clientX}px`;
+      cursor.style.top = `${e.clientY}px`;
+
+      // Calculate movement
+      const deltaX = Math.abs(e.clientX - lastX);
+      const deltaY = Math.abs(e.clientY - lastY);
+      const hasMovedSignificantly = deltaX > 3 || deltaY > 3;
+
+      // Update last position
+      lastX = e.clientX;
+      lastY = e.clientY;
+
+      // Add moving class if there's significant movement
+      if (hasMovedSignificantly && !isMoving) {
+        isMoving = true;
+        cursor.classList.add("moving");
+      }
+
+      // Clear previous timeout
+      clearTimeout(movementTimeout);
+
+      // Set timeout to remove moving class after movement stops
+      movementTimeout = setTimeout(() => {
+        isMoving = false;
+        cursor.classList.remove("moving");
+      }, 100);
+    }
+
+    // Add event listener
+    document.addEventListener("mousemove", updateCursorPosition);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener("mousemove", updateCursorPosition);
+      document.body.removeChild(cursor);
+    };
+  }, []);
+
+  return null;
+}
 
 export default function AnniversaryPage() {
-  // useEffect(() => {
-  //   // Initialize UnicornStudio
-  //   if (!window.UnicornStudio || !window.UnicornStudio.isInitialized) {
-  //     window.UnicornStudio = { isInitialized: false };
-  //     const script = document.createElement("script");
-  //     script.src = "https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.8/dist/unicornStudio.umd.js";
-  //     script.onload = function () {
-  //       if (!window.UnicornStudio.isInitialized) {
-  //         window.UnicornStudio.init();
-  //         window.UnicornStudio.isInitialized = true;
-  //       }
-  //     };
-  //     (document.head || document.body).appendChild(script);
-  //   }
-  // }, []);
-
   return (
     <>
-      {/* <div
-        data-us-project="C7IlHxtOvp0lOHPxgK0M"
-        style={{ width: "100%", height: "100%" }}
-        className="animated-element animate-iframe"
-      ></div> */}
       <App />
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        <div className="flex flex-col gap-1 items-center justify-center h-full">
-          <h1 className="title-heading-1-thin text-[6vh] text-dark-purple translate-x-[-30%] animated-element animate-delay-1">
-            We turned one.
+        <div className="flex flex-col gap-2 lg:gap-1 items-center justify-center h-full">
+          <h1 className="title-heading-1-thin text-[4vh] lg:text-[6vh] text-dark-purple lg:translate-x-[-30%] animated-element animate-delay-1">
+            We turned one year old.
           </h1>
-          <h1 className="title-heading-1-thin text-[6vh] text-dark-purple translate-x-[30%] animated-element animate-delay-2">
+          <h1 className="title-heading-1-thin text-[4vh] lg:text-[6vh] text-dark-purple lg:translate-x-[30%] animated-element animate-delay-2">
             No diapers anymore.
           </h1>
-          <h1 className="title-heading-1 text-[6vh] font-bold text-black translate-x-[-5%] animated-element animate-delay-3">
-            Time to celebrate.
+          <h1 className="title-heading-1 text-[4vh] lg:text-[6vh] font-bold text-black lg:translate-x-[-5%] animated-element animate-delay-3">
+            Time to celebrate!
           </h1>
         </div>
         <svg
-          className="absolute right-8 bottom-8 w-20 h-20 animated-element animate-delay-4"
+          className="absolute right-8 bottom-8 w-[6vh] h-[6vh] animated-element animate-delay-4"
           viewBox="0 0 92 92"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -70,12 +111,26 @@ export default function AnniversaryPage() {
           />
         </svg>
       </div>
+      <CustomCursor />
     </>
   );
 }
 
+// Create main app root
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AnniversaryPage />
+  </StrictMode>
+);
+
+// Create a separate container for confetti overlay
+const confettiContainer = document.createElement("div");
+confettiContainer.id = "confetti-container";
+document.body.appendChild(confettiContainer);
+
+// Render confetti in its own isolated container
+createRoot(confettiContainer).render(
+  <StrictMode>
+    <ConfettiOverlay />
   </StrictMode>
 );
